@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- ===================================================================
+     PLACEHOLDER: change the page title below to the artist's name.
+     This is what appears in the browser tab.
+     =================================================================== -->
+<title>Nikolai Lugansky — Concerts</title>
+
+<style>
+  /* ----- Design tokens ----- */
+  :root {
+    --navy:       #101b2d;   /* page background */
+    --navy-deep:  #0b1424;   /* banner fallback */
+    --ink:        #eae6dc;   /* soft warm white for text */
+    --muted:      #93a0b4;   /* secondary text */
+    --brass:      #c8a96a;   /* accent: dates, links */
+    --hairline:   rgba(234, 230, 220, 0.16);
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--brass); }
+  a:focus-visible {
+    outline: 2px solid var(--brass);
+    outline-offset: 3px;
+  }
+
+  /* ----- Header ----- */
+  .masthead {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 2.5rem;
+    text-align: right;
+  }
+  .masthead h1 {
+    font-weight: 400;
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    color: var(--ink);
+  }
+
+  /* ----- Concerts section ----- */
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 0 1.5rem 5rem;
+  }
+
+  .section-title {
+    font-size: 0.8rem;
+    font-weight: 400;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .concert {
+    border-bottom: 1px solid var(--hairline);
+    padding: 2.2rem 0;
+  }
+
+  .concert .date {
+    font-size: 0.85rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-bottom: 0.7rem;
+  }
+
+  .concert .city {
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+
+  .concert .venue {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  .concert .program {
+    margin-top: 0.9rem;
+    font-size: 1rem;
+    font-style: italic;
+  }
+
+  .concert .collaborators {
+    margin-top: 0.35rem;
+    font-size: 1rem;
+    color: var(--muted);
+  }
+
+  .concert .tickets {
+    display: inline-block;
+    margin-top: 1.1rem;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-bottom: 1px solid var(--brass);
+    padding-bottom: 2px;
+  }
+  .concert .tickets:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+  /* Non-clickable label shown when a concert's link isn't available yet */
+  .concert .tickets.pending {
+    color: var(--muted);
+    border-bottom-color: transparent;
+    cursor: default;
+  }
+
+  /* ----- Load more button ----- */
+  .more-wrap {
+    text-align: center;
+    padding-top: 2.5rem;
+  }
+  .load-more {
+    background: transparent;
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.8rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 0.85rem 1.8rem;
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .load-more:hover { border-color: var(--brass); color: var(--brass); }
+  .load-more:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+
+  /* Hidden concerts (controlled by the script). Overrides the grid display. */
+  .concert.is-hidden { display: none !important; }
+
+  /* ----- Footer ----- */
+  footer {
+    text-align: center;
+    padding: 2.5rem 1.5rem 3.5rem;
+    border-top: 1px solid var(--hairline);
+  }
+  footer a {
+    display: inline-block;
+    color: var(--muted);
+  }
+  footer a:hover { color: var(--ink); }
+  footer svg { width: 26px; height: 26px; display: block; }
+
+  /* ----- Wider screens: date sits beside details ----- */
+  @media (min-width: 640px) {
+    .concert {
+      display: grid;
+      grid-template-columns: 11rem 1fr;
+      column-gap: 2rem;
+    }
+    .concert .date { margin-bottom: 0; padding-top: 0.45rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <!-- PLACEHOLDER: replace "Artist Name" with the real name -->
+  <h1>Nikolai Lugansky</h1>
+</header>
+
+<main>
+  <h2 class="section-title">Upcoming Concerts</h2>
+
+  <!-- ===================================================================
+       HOW TO UPDATE THE CONCERT LIST
+       (no coding knowledge needed — just copy, paste, and edit text)
+
+       Each concert is one block that starts with <article class="concert">
+       and ends with </article>. Keep concerts in date order, soonest first.
+
+       TO ADD a concert:
+         1. Select an existing block from <article class="concert">
+            through </article> and copy it.
+         2. Paste it where it belongs in date order.
+         3. Edit the text inside each line: date, venue, city, program,
+            collaborators, and the Details link (change the address inside
+            href="..." and, if you like, the link text).
+
+       TO EDIT a concert: just change the text between the > and < signs
+       on the relevant line. Don't delete the tags themselves.
+
+       TO REMOVE a concert: delete the whole block, from
+       <article class="concert"> through </article>.
+
+       COLLABORATORS are optional: if a concert has none, delete the whole
+       line that starts with <p class="collaborators">. To add them back,
+       copy that line from another concert.
+
+       WHEN A CONCERT HAS NO LINK YET: leave the line that reads
+       <span class="tickets pending">Details to follow</span>.
+       Once you have the web address, replace that whole line with:
+         <a class="tickets" href="PASTE-THE-URL-HERE" target="_blank" rel="noopener noreferrer">Details</a>
+
+       NOTE: the page shows 20 concerts at a time with a "Load more" button.
+       This happens automatically — just keep the concerts in date order and
+       the button will handle the rest. No need to edit the button or script.
+       =================================================================== -->
+
+  <article class="concert">
+    <p class="date">14 Jun 2026</p>
+    <div>
+      <h3 class="city">Six-Fours-les-Plages, FR</p>
+      <h3 class="venue">Maison du Cygne</h3>
+      <p class="program">Chopin</p>
+      <a class="tickets" href="https://sixfoursvagueclassique.fr/evenement/nikolai-luganski/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">18 Jun 2026</p>
+    <div>
+      <h3 class="city">Hamburg, DE</p>
+      <h3 class="venue">Elbphilharmonie Hamburg</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · NDR Elbphilharmonie Orchestra</p>
+      <a class="tickets" href="https://ndr.de/orchester_chor/elbphilharmonieorchester/konzerte/NDR-Elbphilharmonie-Orchester-mit-Kochanovsky-und-Lugansky,kochanovsky250.html" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">19 Jun 2026</p>
+    <div>
+      <h3 class="city">Hamburg, DE</p>
+      <h3 class="venue">Elbphilharmonie Hamburg</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · NDR Elbphilharmonie Orchestra</p>
+      <a class="tickets" href="https://ndr.de/orchester_chor/elbphilharmonieorchester/konzerte/NDR-Elbphilharmonie-Orchester-mit-Kochanovsky-und-Lugansky,kochanovsky250.html" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">30 Jun 2026</p>
+    <div>
+      <h3 class="city">Tula, RU</p>
+      <h3 class="venue">Tula Philharmonic</h3>
+      <p class="program">Schumann, Chopin</p>
+      <a class="tickets" href="https://filarmonia-tula.ru/events/11417/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">11 Jul 2026</p>
+    <div>
+      <h3 class="city">Tarusa, RU</p>
+      <h3 class="venue">Venue TBA</h3>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">20 Jul 2026</p>
+    <div>
+      <h3 class="city">Verbier, CH</p>
+      <h3 class="venue">Église de Verbier Station</h3>
+      <p class="program">Brahms</p>
+      <p class="collaborators">With Marc Bouchkov, violin · Stephen Waarts, violin · Blythe Teh Engstroem, viola · Mischa Maisky, cello</p>
+      <a class="tickets" href="https://verbierfestival.com/en/show/vf2026-07-20-1930/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">22 Jul 2026</p>
+    <div>
+      <h3 class="city">Verbier, CH</p>
+      <h3 class="venue">Forum du Hameau</h3>
+      <p class="program">Master class</p>
+      <a class="tickets" href="https://verbierfestival.com/en/show/vf2026-07-22-academy-lugansky-masterclass-piano/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">23 Jul 2026</p>
+    <div>
+      <h3 class="city">Verbier, CH</p>
+      <h3 class="venue">Forum du Hameau</h3>
+      <p class="program">Master class</p>
+      <a class="tickets" href="https://verbierfestival.com/en/show/vf2026-07-23-academy-lugansky-masterclass-piano/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">24 Jul 2026</p>
+    <div>
+      <h3 class="city">Verbier, CH</p>
+      <h3 class="venue">Forum du Hameau</h3>
+      <p class="program">Master class</p>
+      <a class="tickets" href="https://verbierfestival.com/en/show/vf2026-07-24-academy-lugansky-masterclass-piano/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">25 Jul 2026</p>
+    <div>
+      <h3 class="city">Verbier, CH</p>
+      <h3 class="venue">Forum du Hameau</h3>
+      <p class="program">Master class</p>
+      <a class="tickets" href="https://verbierfestival.com/en/show/vf2026-07-25-academy-lugansky-masterclass-piano/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">27 Jul 2026</p>
+    <div>
+      <h3 class="city">Verbier, CH</p>
+      <h3 class="venue">Église de Verbier Station</h3>
+      <p class="program">Chopin, Schumann</p>
+      <a class="tickets" href="https://verbierfestival.com/en/show/vf2026-07-27-1100/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">29 Jul 2026</p>
+    <div>
+      <h3 class="city">La Roque d&#x27;Anthéron, FR</p>
+      <h3 class="venue">Parc du Château de Florans</h3>
+      <p class="program">Chopin, Schumann</p>
+      <a class="tickets" href="https://festival-piano.com/fpr_spectacle/29-07-26-21h-parc-nikolai-lugansky/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">23 Aug 2026</p>
+    <div>
+      <h3 class="city">Tambov, RU</p>
+      <h3 class="venue">Ivanovka</h3>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">28 Aug 2026</p>
+    <div>
+      <h3 class="city">Kaliningrad, RU</p>
+      <h3 class="venue">Königsberg Cathedral</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Philipp Chizhevsky · Russian National Youth Symphony Orchestra</p>
+      <a class="tickets" href="https://sobor39.ru/events/concerts/night/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">6 Sep 2026</p>
+    <div>
+      <h3 class="city">Moscow, RU</p>
+      <h3 class="venue">Tchaikovsky Concert Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Philipp Chizhevsky · Svetlanov Symphony Orchestra</p>
+      <a class="tickets" href="https://meloman.ru/concert/kzch-2026-09-06/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">10 Sep 2026</p>
+    <div>
+      <h3 class="city">Hanover, DE</p>
+      <h3 class="venue">NDR Concert Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · NDR Elbphilharmonie Orchestra</p>
+      <a class="tickets" href="https://ndr.de/orchester_chor/radiophilharmonie/konzerte/ndr-radiophilharmonie-saisoneroeffnung-mit-kochanovsky-lugansky,kochanovsky-122.html" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">11 Sep 2026</p>
+    <div>
+      <h3 class="city">Hanover, DE</p>
+      <h3 class="venue">NDR Concert Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · NDR Elbphilharmonie Orchestra</p>
+      <a class="tickets" href="https://ndr.de/orchester_chor/radiophilharmonie/konzerte/ndr-radiophilharmonie-saisoneroeffnung-mit-kochanovsky-lugansky,kochanovsky-122.html" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">15 Sep 2026</p>
+    <div>
+      <h3 class="city">Miass, RU</p>
+      <h3 class="venue">Palace of Culture of the Automobile Builders</h3>
+      <p class="program">Programme TBA</p>
+      <p class="collaborators">With Alexey Rubin · Chelyabinsk State Symphony Orchestra</p>
+      <a class="tickets" href="https://дкурал.рф/afisha/1304-simfonicheskij-orkestr-g-chelyabinsk-i-n-luganskij-g-moskva-simfonicheskij-orkestr-g-chelyabinsk-i-n-luganskij-g-moskva-6-simfonicheskij-orkestr-g-chelyabinsk-i-n-luganskij-g-moskva.html" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">16 Sep 2026</p>
+    <div>
+      <h3 class="city">Chelyabinsk, RU</p>
+      <h3 class="venue">Prokofiev Concert Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Alexey Rubin · Chelyabinsk State Symphony Orchestra</p>
+      <a class="tickets" href="https://philarmonia.ru/afisha/45918-otkrytie-90-go-kontsertnogo-sezona-n-luganskiy-fortepiano/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">21 Sep 2026</p>
+    <div>
+      <h3 class="city">Rome, IT</p>
+      <h3 class="venue">Auditorium Parco della Musica</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · Orchestra dell&#x27;Accademia Nazionale di Santa Cecilia</p>
+      <a class="tickets" href="https://santacecilia.it/concerto/rachmaninoff-concerti-per-pianoforte-n-1-e-n-2/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">24 Sep 2026</p>
+    <div>
+      <h3 class="city">Rome, IT</p>
+      <h3 class="venue">Auditorium Parco della Musica</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · Orchestra dell&#x27;Accademia Nazionale di Santa Cecilia</p>
+      <a class="tickets" href="https://santacecilia.it/concerto/rachmaninoff-concerto-per-pianoforte-n-4/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">27 Sep 2026</p>
+    <div>
+      <h3 class="city">Rome, IT</p>
+      <h3 class="venue">Auditorium Parco della Musica</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · Orchestra dell&#x27;Accademia Nazionale di Santa Cecilia</p>
+      <a class="tickets" href="https://santacecilia.it/concerto/rachmaninoff-concerto-per-pianoforte-n-3/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">30 Sep 2026</p>
+    <div>
+      <h3 class="city">Verona, IT</p>
+      <h3 class="venue">Teatro Filarmonico</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · Orchestra dell&#x27;Accademia Nazionale di Santa Cecilia</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">1 Oct 2026</p>
+    <div>
+      <h3 class="city">Rimini, IT</p>
+      <h3 class="venue">Teatro Amintore Galli</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · Orchestra dell&#x27;Accademia Nazionale di Santa Cecilia</p>
+      <a class="tickets" href="https://sagramusicalemalatestiana.it/2026/orchestra-di-santa-cecilia-stanislav-kochanovsky" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">2 Oct 2026</p>
+    <div>
+      <h3 class="city">Bratislava, SK</p>
+      <h3 class="venue">Bratislava Reduta</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · Orchestra dell&#x27;Accademia Nazionale di Santa Cecilia</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">12 Oct 2026</p>
+    <div>
+      <h3 class="city">London, GB</p>
+      <h3 class="venue">Wigmore Hall</h3>
+      <p class="program">Schumann, Chopin</p>
+      <a class="tickets" href="https://wigmore-hall.org.uk/whats-on/202610121930" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">14 Oct 2026</p>
+    <div>
+      <h3 class="city">Nottingham, GB</p>
+      <h3 class="venue">Royal Concert Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · NDR Radiophilharmonie</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">15 Oct 2026</p>
+    <div>
+      <h3 class="city">London, GB</p>
+      <h3 class="venue">Cadogan Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · NDR Radiophilharmonie</p>
+      <a class="tickets" href="https://cadoganhall.com/whats-on/zios-2026-27-ndr-radio-philharmonic-hanover/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">16 Oct 2026</p>
+    <div>
+      <h3 class="city">Basingstoke, GB</p>
+      <h3 class="venue">Anvil Concert Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Stanislav Kochanovsky · NDR Radiophilharmonie</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">20 Oct 2026</p>
+    <div>
+      <h3 class="city">Madrid, ES</p>
+      <h3 class="venue">Auditorio Nacional de Música</h3>
+      <p class="program">Programme TBA</p>
+      <p class="collaborators">With Vadim Repin, violin</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">4 Nov 2026</p>
+    <div>
+      <h3 class="city">Nizhny Novgorod, RU</p>
+      <h3 class="venue">Nizhny Novgorod Philharmonic</h3>
+      <p class="program">Schumann, Chopin</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">6 Nov 2026</p>
+    <div>
+      <h3 class="city">Moscow, RU</p>
+      <h3 class="venue">Philharmonia-2</h3>
+      <p class="program">Schumann, Chopin</p>
+      <a class="tickets" href="https://meloman.ru/concert/f2-2026-11-06/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">8 Nov 2026</p>
+    <div>
+      <h3 class="city">Moscow, RU</p>
+      <h3 class="venue">Tchaikovsky Concert Hall</h3>
+      <p class="program">Schumann, Chopin</p>
+      <a class="tickets" href="https://meloman.ru/concert/kzch-2026-11-08/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">17 Nov 2026</p>
+    <div>
+      <h3 class="city">Toulouse, FR</p>
+      <h3 class="venue">La Halle aux Grains</h3>
+      <p class="program">Schumann, Chopin</p>
+      <a class="tickets" href="https://grandsinterpretes.fr/concerts/nikolai-lugansky/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">28 Nov 2026</p>
+    <div>
+      <h3 class="city">Moscow, RU</p>
+      <h3 class="venue">Tchaikovsky Concert Hall</h3>
+      <p class="program">Prokofiev, Beethoven</p>
+      <p class="collaborators">With Vadim Repin, violin</p>
+      <a class="tickets" href="https://meloman.ru/concert/kzch-2026-11-28/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">30 Nov 2026</p>
+    <div>
+      <h3 class="city">Yekaterinburg, RU</p>
+      <h3 class="venue">Sverdlovsk Philharmonic</h3>
+      <p class="program">Beethoven, Schumann, Chopin</p>
+      <a class="tickets" href="https://sgaf.ru/afisha/5835" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">8 Dec 2026</p>
+    <div>
+      <h3 class="city">Metz, FR</p>
+      <h3 class="venue">Arsenal</h3>
+      <p class="program">Schumann, Chopin</p>
+      <a class="tickets" href="https://citemusicale-metz.fr/fr/programmation/saison-26-27/arsenal/nikolai-lugansky" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">10 Dec 2026</p>
+    <div>
+      <h3 class="city">Stuttgart, DE</p>
+      <h3 class="venue">Liederhalle</h3>
+      <p class="program">Brahms</p>
+      <p class="collaborators">With Juraj Valčuha · SWR Symphonieorchester</p>
+      <a class="tickets" href="https://swr.de/swr-symphonieorchester/veranstaltung-10-12-2026-stuttgart-100.html" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">11 Dec 2026</p>
+    <div>
+      <h3 class="city">Stuttgart, DE</p>
+      <h3 class="venue">Liederhalle</h3>
+      <p class="program">Brahms</p>
+      <p class="collaborators">With Juraj Valčuha · SWR Symphonieorchester</p>
+      <a class="tickets" href="https://swr.de/swr-symphonieorchester/veranstaltung-11-12-2026-stuttgart-100.html" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">22 Dec 2026</p>
+    <div>
+      <h3 class="city">Seoul, KR</p>
+      <h3 class="venue">Lotte Concert Hall</h3>
+      <p class="program">Programme TBA</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">26 Dec 2026</p>
+    <div>
+      <h3 class="city">Moscow, RU</p>
+      <h3 class="venue">Tchaikovsky Concert Hall</h3>
+      <p class="program">Brahms</p>
+      <p class="collaborators">With Arsentiy Tkachenko · Tchaikovsky Symphony Orchestra</p>
+      <a class="tickets" href="https://meloman.ru/concert/kzch-2026-12-26/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">21 Jan 2027</p>
+    <div>
+      <h3 class="city">Santa Barbara, US</p>
+      <h3 class="venue">Lobero Theatre</h3>
+      <p class="program">Beethoven, Schumann</p>
+      <a class="tickets" href="https://cama-2026-2027-108th-concert-season-virtuosi-429335165808.us-west1.run.app/#/concert/nikolai-lugansky" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">24 Jan 2027</p>
+    <div>
+      <h3 class="city">Denver, US</p>
+      <h3 class="venue">Newman Center</h3>
+      <p class="program">Beethoven, Schumann</p>
+      <a class="tickets" href="https://friendsofchambermusic.com/event/nikolai-lugansky-piano/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">5 Feb 2027</p>
+    <div>
+      <h3 class="city">Moscow, RU</p>
+      <h3 class="venue">Tchaikovsky Concert Hall</h3>
+      <p class="program">Schubert, Fauré, Dvořák</p>
+      <p class="collaborators">With Tatiana Samouil, violin · Helena Tarosian, violin · Andrey Usov, viola · Alexander Knyazev, cello</p>
+      <a class="tickets" href="https://meloman.ru/concert/kzch-2027-02-05/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">16 Feb 2027</p>
+    <div>
+      <h3 class="city">Hamamatsu, JP</p>
+      <h3 class="venue">Act City Hamamatsu</h3>
+      <p class="program">Wagner–Lugansky, Wagner–Liszt</p>
+      <a class="tickets" href="https://actcity.jp/event/detail/?id=30472" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">17 Feb 2027</p>
+    <div>
+      <h3 class="city">Tokyo, JP</p>
+      <h3 class="venue">Kioi Hall</h3>
+      <p class="program">Beethoven, Schumann</p>
+      <a class="tickets" href="https://nipponsteel-kioihall.jp/concert/20270217k1900/?date=2027-02-17&amp;time=19:00" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">19 Feb 2027</p>
+    <div>
+      <h3 class="city">Kyoto, JP</p>
+      <h3 class="venue">Kyoto Concert Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Junichi Hirokami · Kyoto Symphony Orchestra</p>
+      <a class="tickets" href="https://kyoto-symphony.jp/en/concert/detail.php?id=1485&amp;y=2027&amp;m=2" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">20 Feb 2027</p>
+    <div>
+      <h3 class="city">Kyoto, JP</p>
+      <h3 class="venue">Kyoto Concert Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Junichi Hirokami · Kyoto Symphony Orchestra</p>
+      <a class="tickets" href="https://kyoto-symphony.jp/en/concert/detail.php?id=1484&amp;y=2027&amp;m=2" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">23 Feb 2027</p>
+    <div>
+      <h3 class="city">Paris, FR</p>
+      <h3 class="venue">Théâtre des Champs-Élysées</h3>
+      <p class="program">Beethoven, Schumann</p>
+      <a class="tickets" href="https://theatrechampselysees.fr/saison-2026-27/recital-piano/nikolai-lugansky-16" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">17 Mar 2027</p>
+    <div>
+      <h3 class="city">Lucerne, CH</p>
+      <h3 class="venue">KKL Luzern</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Michael Sanderling · Luzerner Sinfonieorchester</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">18 Mar 2027</p>
+    <div>
+      <h3 class="city">Lucerne, CH</p>
+      <h3 class="venue">KKL Luzern</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Michael Sanderling · Luzerner Sinfonieorchester</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">21 Mar 2027</p>
+    <div>
+      <h3 class="city">Sion, CH</p>
+      <h3 class="venue">Noda BCVS</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Michael Sanderling · Luzerner Sinfonieorchester</p>
+      <a class="tickets" href="https://noda.ch/fr/programme/luzerner-sinfonieorchester-ǀ-m-sanderling-ǀ-n-lugansky/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">28 Mar 2027</p>
+    <div>
+      <h3 class="city">Fermo, IT</p>
+      <h3 class="venue">Teatro dell&#x27;Aquila</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With James Gaffigan · Luzerner Sinfonieorchester</p>
+      <span class="tickets pending">Details to follow</span>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">1 Apr 2027</p>
+    <div>
+      <h3 class="city">Moscow, RU</p>
+      <h3 class="venue">Tchaikovsky Concert Hall</h3>
+      <p class="program">Rachmaninoff</p>
+      <p class="collaborators">With Dimitris Botinis · Novosibirsk Academic Symphony Orchestra</p>
+      <a class="tickets" href="https://meloman.ru/concert/kzch-2027-04-01/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">11 Apr 2027</p>
+    <div>
+      <h3 class="city">Amsterdam, NL</p>
+      <h3 class="venue">Concertgebouw</h3>
+      <p class="program">Schumann, Chopin</p>
+      <a class="tickets" href="https://concertgebouw.nl/concerten/41271749-grote-pianisten-nikolai-lugansky-speelt-chopin-en-schumann" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">14 Apr 2027</p>
+    <div>
+      <h3 class="city">Rome, IT</p>
+      <h3 class="venue">Auditorium Parco della Musica</h3>
+      <p class="program">Schumann, Chopin</p>
+      <a class="tickets" href="https://santacecilia.it/concerto/schumann-chopin-nikolay-lugansky/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">16 Apr 2027</p>
+    <div>
+      <h3 class="city">Strasbourg, FR</p>
+      <h3 class="venue">Palais de la musique et des congrès</h3>
+      <p class="program">Brahms</p>
+      <p class="collaborators">With Michael Sanderling · Orchestre philharmonique de Strasbourg</p>
+      <a class="tickets" href="https://philharmonique.strasbourg.eu/detail-evenement/-/entity/id/576632442/entre-deux-mondes" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">17 Apr 2027</p>
+    <div>
+      <h3 class="city">Strasbourg, FR</p>
+      <h3 class="venue">Palais de la musique et des congrès</h3>
+      <p class="program">Brahms</p>
+      <p class="collaborators">With Michael Sanderling · Orchestre philharmonique de Strasbourg</p>
+      <a class="tickets" href="https://philharmonique.strasbourg.eu/detail-evenement/-/entity/id/576632442/entre-deux-mondes" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">13 May 2027</p>
+    <div>
+      <h3 class="city">Moscow, RU</p>
+      <h3 class="venue">Tchaikovsky Concert Hall</h3>
+      <p class="program">Brahms</p>
+      <p class="collaborators">With Alexander Sladkovsky · Tatarstan National Symphony Orchestra</p>
+      <a class="tickets" href="https://meloman.ru/concert/kzch-2027-05-13/" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <article class="concert">
+    <p class="date">26 May 2027</p>
+    <div>
+      <h3 class="city">Amsterdam, NL</p>
+      <h3 class="venue">Muzenzaal</h3>
+      <p class="program">Beethoven, Schumann</p>
+      <a class="tickets" href="https://musisenstadstheater.nl/nl/agenda/nikolai-lugansky/9910" target="_blank" rel="noopener noreferrer">Details</a>
+    </div>
+  </article>
+
+  <!-- "Load more" button. This is handled automatically by the script at the
+       bottom of the page — you don't need to touch it when editing concerts. -->
+  <div class="more-wrap">
+    <button id="loadMore" type="button" class="load-more">More</button>
+  </div>
+
+</main>
+
+<footer>
+  <a href="https://www.instagram.com/nikolai_lugansky" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/>
+      <circle cx="12" cy="12" r="4.5"/>
+      <circle cx="17.6" cy="6.4" r="0.9" fill="currentColor" stroke="none"/>
+    </svg>
+  </a>
+</footer>
+
+<script>
+  // Shows concerts in batches. Edit the number below to change batch size.
+  (function () {
+    var BATCH = 20;
+    var concerts = Array.prototype.slice.call(document.querySelectorAll('.concert'));
+    var btn = document.getElementById('loadMore');
+    var shown = 0;
+
+    function render() {
+      concerts.forEach(function (el, i) {
+        el.classList.toggle('is-hidden', i >= shown);
+      });
+      btn.style.display = (shown >= concerts.length) ? 'none' : '';
+    }
+
+    function showMore() {
+      shown = Math.min(shown + BATCH, concerts.length);
+      render();
+    }
+
+    shown = Math.min(BATCH, concerts.length);
+    render();
+    btn.addEventListener('click', showMore);
+  })();
+</script>
+
+</body>
+</html>
