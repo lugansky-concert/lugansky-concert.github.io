@@ -144,7 +144,9 @@
     outline: none;
     transition: border-color 0.2s, color 0.2s;
   }
-  .load-more:hover { border-color: var(--ink); color: var(--ink); }
+  @media (hover: hover) {
+    .load-more:hover { border-color: var(--ink); color: var(--ink); }
+  }
   .load-more:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
 
   /* Hidden concerts (controlled by the script). Overrides the grid display. */
